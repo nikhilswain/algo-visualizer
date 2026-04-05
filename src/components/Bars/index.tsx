@@ -21,7 +21,7 @@ export default function SortBars() {
         border: `1px solid ${C.border}`,
         borderRadius: 10,
         padding: "14px 10px 8px",
-        height: 220,
+        height: 300,
         display: "flex",
         alignItems: "flex-end",
         gap: 2,

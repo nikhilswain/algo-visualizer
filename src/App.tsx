@@ -43,7 +43,7 @@ function Inner() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 340px",
+          gridTemplateColumns: "1fr 400px",
           gap: 12,
           flex: 1,
           minHeight: 0,

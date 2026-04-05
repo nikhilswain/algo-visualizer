@@ -204,6 +204,8 @@ export default function GridViz() {
           border: `1px solid ${C.border}`,
           userSelect: "none",
           cursor: drawTool === "erase" ? "crosshair" : "cell",
+          maxWidth: 880,
+          margin: "0 auto",
         }}
       >
         {Array.from({ length: GRID_ROWS_N }, (_, r) =>
