@@ -1,73 +1,231 @@
-# React + TypeScript + Vite
+# Algo Visualiser
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> An interactive algorithm visualizer built with React — watch sorting and pathfinding algorithms execute step by step, with plain-English narration and live code sync.
 
-Currently, two official plugins are available:
+**→ [github.com/nikhilswain/algo-visualiser](https://github.com/nikhilswain/algo-visualiser)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## What is this?
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Algo Visualiser is a learning tool for understanding how algorithms actually work — not just memorizing Big O complexity, but seeing _why_ they make the decisions they do at every single step.
 
-## Expanding the ESLint configuration
+Most algorithm visualizers just show bars moving. This one narrates each operation in plain English as it happens, highlights the exact line of code being executed, and lets you step through one operation at a time so you can follow the logic yourself.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Built for:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Developers preparing for technical interviews who want to _understand_, not memorize
+- CS students who learn better by seeing than reading
+- Anyone who's ever wondered "wait, how does quicksort actually partition?"
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Algorithms
+
+### Sorting — 8 algorithms
+
+| Algorithm      | Category       | Avg        | Best       | Space    |
+| -------------- | -------------- | ---------- | ---------- | -------- |
+| Bubble Sort    | Comparison     | O(n²)      | O(n)       | O(1)     |
+| Selection Sort | Comparison     | O(n²)      | O(n²)      | O(1)     |
+| Insertion Sort | Comparison     | O(n²)      | O(n)       | O(1)     |
+| Merge Sort     | Comparison     | O(n log n) | O(n log n) | O(n)     |
+| Quick Sort     | Comparison     | O(n log n) | O(n log n) | O(log n) |
+| Heap Sort      | Comparison     | O(n log n) | O(n log n) | O(1)     |
+| Counting Sort  | Non-comparison | O(n+k)     | O(n+k)     | O(k)     |
+| Radix Sort     | Non-comparison | O(nk)      | O(nk)      | O(n+k)   |
+
+Every algorithm narrates each comparison, swap, and pass in plain English, with a live code panel that highlights the exact line running — in JavaScript or Python.
+
+### Pathfinding — 6 algorithms
+
+| Algorithm         | Shortest path?   | Weighted? | Notes                                 |
+| ----------------- | ---------------- | --------- | ------------------------------------- |
+| A\*               | Yes              | Yes       | Best general-purpose — uses heuristic |
+| Dijkstra          | Yes              | Yes       | A\* without the heuristic             |
+| BFS               | Yes (unweighted) | No        | Guaranteed shortest on uniform grids  |
+| DFS               | No               | No        | Explores deep, not optimal            |
+| Greedy BFS        | No               | No        | Fast but may miss shorter paths       |
+| Bidirectional BFS | Yes              | No        | ~Half the nodes of regular BFS        |
+
+The pathfinding grid is fully interactive — draw walls, place weighted cells (cost ×3), drag start and end markers anywhere, and watch each algorithm carve through the grid differently.
+
+---
+
+## Features
+
+**Narrator** — Every single step is explained in plain English. Not just "swapping" but "5 > 3 — out of order, swapping to bubble the larger value right." The algorithm explains its own decisions.
+
+**Live code sync** — The exact line being executed is highlighted in the code panel as the animation plays. Toggle between JavaScript and Python. Step through manually to trace the logic line by line.
+
+**Step mode** — Advance one operation at a time with `→`. Pause mid-algorithm, inspect the state, resume whenever you're ready.
+
+**Heuristic toggle for A\*** — Switch between Manhattan, Euclidean, and Diagonal distance heuristics and see how each changes which cells A\* explores.
+
+**Grid presets** — One-click: Clear, Default walls, Maze, Dense obstacles, Weighted terrain.
+
+**"What" and "When"** — Every algorithm has a plain-English description of how it works and a real-world use case for when you'd actually reach for it.
+
+**Keyboard shortcuts**
+
+| Key     | Action             |
+| ------- | ------------------ |
+| `Space` | Play / Pause       |
+| `→`     | Step one operation |
+| `Esc`   | Reset              |
+
+---
+
+## Getting started
+
+```bash
+git clone https://github.com/nikhilswain/algo-visualiser.git
+cd algo-visualiser
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+No external runtime dependencies beyond React. Uses CSS transitions and native JS timing — no animation library needed.
+
+---
+
+## Project structure
+
+```
+src/
+├── App.jsx                          # Root layout
+├── theme.js                         # Design tokens (colors, fonts)
+├── store/
+│   └── index.jsx                    # Global state — useReducer + Context
+├── hooks/
+│   └── useVisualizer.js             # Run / step / pause / reset logic
+├── algorithms/
+│   ├── sorting/index.js             # All 8 sort generators
+│   └── pathfinding/index.js         # All 6 path generators
+└── components/
+    ├── Bars/                        # Sorting bar chart
+    ├── Grid/                        # Pathfinding grid + wall drawing
+    ├── CodePanel/                   # Syntax-highlighted code + line sync
+    ├── Narrator/                    # Plain-English step explanation
+    ├── Controls/                    # Run / pause / step / reset + presets
+    └── Layout/
+        ├── TopBar.jsx               # Category tabs + algo picker + complexity badges
+        ├── StatsBar.jsx             # Live stats (comparisons, swaps, visited...)
+        └── SortLegend.jsx           # Color legend
+```
+
+---
+
+## How algorithms are structured
+
+Every algorithm is a JavaScript generator function that `yield`s step objects. The visualizer consumes these one at a time — which is what makes step mode, pausing, and narration work without any complex async orchestration.
 
 ```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+// Example step object (sorting)
+{
+  type: 'compare',     // compare | swap | sorted | pivot | current | done
+  i: 3,               // first index
+  j: 5,               // second index
+  comps: 12,          // running comparison count
+  swaps: 4,           // running swap count
+  passes: 2,          // current pass number
+  arr: [...],         // full array snapshot at this step
+  line: 4,            // line to highlight in the code panel
+  msg: 'Comparing [3]=7 vs [5]=2. Out of order → swap.',
+}
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+// Example step object (pathfinding)
+{
+  type: 'visit',       // visit | frontier | path | done
+  r: 5, c: 8,          // grid coordinates
+  gCost: 6,            // actual cost from start
+  hCost: 4,            // heuristic estimate to goal
+  fCost: 10,           // f = g + h
+  visited: 42,         // total cells visited so far
+  frontier: 18,        // current frontier size
+  msg: 'Expanding (5,8) — g=6, h=4, f=10.',
+}
 ```
+
+Adding a new algorithm means writing one generator function and one config entry. The UI picks it up automatically.
+
+---
+
+## Roadmap
+
+### Phase 1 — More algorithms
+
+**Sorting**
+
+- [ ] TimSort — what Python and V8 actually use; hybrid merge + insertion
+- [ ] Shell Sort — gap sequence visualization
+- [ ] Cycle Sort — minimizes writes, interesting contrast to Selection
+
+**Pathfinding**
+
+- [ ] Jump Point Search (JPS) — optimized A\* for uniform grids, dramatically fewer expanded nodes
+- [ ] Theta* — any-angle pathfinding, smoother paths than grid-constrained A*
+- [ ] IDA* — iterative deepening A*, memory-efficient for large grids
+
+**Graph algorithms** _(new category)_
+
+- [ ] Topological Sort — DAG visualization, dependency resolution
+- [ ] Cycle Detection — directed and undirected graphs
+- [ ] Kruskal's MST — minimum spanning tree with edge weight visualization
+- [ ] Prim's MST — grow the tree from a seed node
+
+**Tree / data structures** _(new category)_
+
+- [ ] BST insert / delete / search
+- [ ] AVL rotations — show exactly when and why rotations happen
+- [ ] Heap build + extract — visualize the tree structure, not just the array
+
+**Dynamic programming** _(new category)_
+
+- [ ] Fibonacci — recursive call tree vs memoized table, side by side
+- [ ] Longest Common Subsequence — grid fill visualization
+- [ ] 0/1 Knapsack — DP table construction step by step
+
+### Phase 2 — Features
+
+- [ ] **Comparison mode** — split screen race, two algorithms on the same input, live stat comparison
+- [ ] **Timeline scrubber** — drag a slider to replay any step, rewind, inspect past states
+- [ ] **State inspector** — click any cell during pathfinding to see g, h, f, and parent
+- [ ] **Debug panel** — toggle to expose internal data structures (open set, closed set, queue, stack) at each step
+- [ ] **Custom input** — paste a JSON array for sorting, or upload a grid config for pathfinding
+- [ ] **Heatmap overlay** — color-code every cell by its h(n) value during A\* to visualize the heuristic
+
+### Phase 3 — Polish
+
+- [ ] Mobile layout — touch-friendly grid drawing, responsive bar chart
+- [ ] Persist settings — remember speed, language, last algorithm used
+- [ ] Export — save a replay as a GIF or step-by-step image sequence
+- [ ] Plugin API — define your own algorithm generator and load it into the visualizer
+
+---
+
+## Design decisions
+
+**Generators over callbacks** — Every algorithm is a generator function. The runner calls `gen.next()` in a loop. Pause means stop calling. Step means call once. Rewind (future) means replay from a snapshot. No callback hell, no complex effect chains.
+
+**No animation library** — Bar and cell transitions are pure CSS (`transition: background 0.1s, height 0.08s`). Keeps the bundle lean and timing predictable. Anime.js was used in early prototyping but wasn't needed for the final result.
+
+**Narration lives in the algorithm** — Each `yield` carries its own `msg` string. The algorithm itself knows best what it's doing at each step, so the explanation is co-located with the logic rather than mapped from the outside.
+
+**Global state via useReducer** — One reducer, one context. Components dispatch typed actions and read the slice they need. No prop drilling, no Zustand/Redux overhead for a project of this size.
+
+---
+
+## Contributing
+
+The easiest contribution is adding a new algorithm:
+
+1. Write a generator function in `src/algorithms/sorting/index.js` or `src/algorithms/pathfinding/index.js`
+2. Add a config entry with `label`, `complexity`, `info`, `why`, `code` (JS + Python), and your generator as `fn`
+3. The UI picks it up automatically — no other changes needed
+
+For new algorithm categories (graph, tree, DP), add a file under `src/algorithms/`, create a corresponding component in `src/components/`, and wire it into `TopBar.jsx` and `useVisualizer.js`.
+
+Open an issue before starting a big feature so we can align on approach.
+
+---
