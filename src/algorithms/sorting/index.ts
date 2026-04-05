@@ -18,7 +18,7 @@ export function* bubbleSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 4,
+        line: { js: 4, py: 4 },
         narrate: `Comparing [${j}]=${a[j]} with [${j + 1}]=${a[j + 1]}. ${a[j] > a[j + 1] ? "Out of order → swap." : "In order → move on."}`,
       };
       if (a[j] > a[j + 1]) {
@@ -32,7 +32,7 @@ export function* bubbleSort(arr) {
           swaps,
           passes,
           arr: [...a],
-          line: 5,
+          line: { js: 5, py: 5 },
           narrate: `Swapped ${a[j + 1]} ↔ ${a[j]}. Larger value bubbles right.`,
         };
       }
@@ -44,7 +44,7 @@ export function* bubbleSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 3,
+      line: { js: 3, py: 3 },
       narrate: `Pass ${passes} done. Element at position ${n - 1 - i} is in its final place.`,
     };
   }
@@ -55,7 +55,7 @@ export function* bubbleSort(arr) {
     swaps,
     passes,
     arr: [...a],
-    line: 0,
+    line: { js: 0, py: 0 },
     narrate: "All elements sorted!",
   };
   yield {
@@ -84,7 +84,7 @@ export function* selectionSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 3,
+      line: { js: 3, py: 3 },
       narrate: `Pass ${passes}: scanning from position ${i} to find the minimum of the unsorted region.`,
     };
     for (let j = i + 1; j < n; j++) {
@@ -97,7 +97,7 @@ export function* selectionSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 5,
+        line: { js: 5, py: 5 },
         narrate: `Is [${j}]=${a[j]} < current min [${minIdx}]=${a[minIdx]}? ${a[j] < a[minIdx] ? "Yes — new minimum!" : "No."}`,
       };
       if (a[j] < a[minIdx]) minIdx = j;
@@ -113,7 +113,7 @@ export function* selectionSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 7,
+        line: { js: 7, py: 7 },
         narrate: `Minimum found at [${minIdx}]=${a[i]}. Placed at position ${i}.`,
       };
     }
@@ -124,7 +124,7 @@ export function* selectionSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 2,
+      line: { js: 2, py: 2 },
       narrate: `Position ${i} locked. Sorted region grows by 1.`,
     };
   }
@@ -135,7 +135,7 @@ export function* selectionSort(arr) {
     swaps,
     passes,
     arr: [...a],
-    line: 0,
+    line: { js: 0, py: 0 },
     narrate: "Last element sorted!",
   };
   yield {
@@ -161,7 +161,7 @@ export function* insertionSort(arr) {
     swaps,
     passes,
     arr: [...a],
-    line: 1,
+    line: { js: 1, py: 1 },
     narrate:
       "Single element is trivially sorted. Starting to insert remaining elements.",
   };
@@ -176,7 +176,7 @@ export function* insertionSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 2,
+      line: { js: 2, py: 2 },
       narrate: `Picking up key=${key} at position ${i}. Inserting into sorted left portion.`,
     };
     while (j >= 0 && a[j] > key) {
@@ -191,7 +191,7 @@ export function* insertionSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 4,
+        line: { js: 4, py: 5 },
         narrate: `${a[j]} > ${key} → shift right to make room.`,
       };
       j--;
@@ -204,7 +204,7 @@ export function* insertionSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 7,
+      line: { js: 7, py: 7 },
       narrate: `Inserted ${key} at position ${j + 1}. Left side is sorted up to index ${i}.`,
     };
   }
@@ -245,7 +245,7 @@ export function* mergeSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 10,
+        line: { js: 10, py: 8 },
         narrate: `Merging halves: ${L[i]} vs ${R[j]}. Taking ${L[i] <= R[j] ? L[i] : R[j]}.`,
       };
       a[k++] = L[i] <= R[j] ? L[i++] : R[j++];
@@ -257,7 +257,7 @@ export function* mergeSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 11,
+        line: { js: 11, py: 9 },
         narrate: `Placed element at position ${k - 1} in merged output.`,
       };
     }
@@ -271,7 +271,7 @@ export function* mergeSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 12,
+        line: { js: 12, py: 11 },
         narrate: "Copying remaining left.",
       };
     }
@@ -285,7 +285,7 @@ export function* mergeSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 13,
+        line: { js: 12, py: 11 },
         narrate: "Copying remaining right.",
       };
     }
@@ -297,7 +297,7 @@ export function* mergeSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 5,
+        line: { js: 5, py: 5 },
         narrate: `Subarray [${l}..${r}] fully merged and sorted.`,
       };
   }
@@ -328,7 +328,7 @@ export function* quickSort(arr) {
           swaps,
           passes,
           arr: [...a],
-          line: 1,
+          line: { js: 1, py: 2 },
           narrate: `Single element at ${lo} — already sorted.`,
         };
       return;
@@ -343,7 +343,7 @@ export function* quickSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 8,
+      line: { js: 8, py: 8 },
       narrate: `Pivot = ${pivot} at [${hi}]. Partitioning: smaller left, larger right.`,
     };
     for (let j = lo; j < hi; j++) {
@@ -356,7 +356,7 @@ export function* quickSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 10,
+        line: { js: 11, py: 10 },
         narrate: `Is ${a[j]} ≤ pivot ${pivot}? ${a[j] <= pivot ? "Yes → belongs left." : "No → stays right."}`,
       };
       if (a[j] <= pivot) {
@@ -371,7 +371,7 @@ export function* quickSort(arr) {
           swaps,
           passes,
           arr: [...a],
-          line: 12,
+          line: { js: 11, py: 12 },
           narrate: `${a[j]} ≤ pivot → swapped to left partition at [${i}].`,
         };
       }
@@ -386,7 +386,7 @@ export function* quickSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 15,
+      line: { js: 12, py: 13 },
       narrate: `Pivot ${a[i + 1]} placed at final position [${i + 1}]. Left < pivot < Right.`,
     };
     yield {
@@ -396,7 +396,7 @@ export function* quickSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 16,
+      line: { js: 13, py: 14 },
       narrate: `Position ${i + 1} is locked forever.`,
     };
     yield* qs(lo, i);
@@ -433,7 +433,7 @@ export function* heapSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 3,
+      line: { js: 11, py: 9 },
       narrate: `Heapify: comparing node ${root} with left child ${l < size ? l : "N/A"}.`,
     };
     if (l < size && a[l] > a[largest]) largest = l;
@@ -452,7 +452,7 @@ export function* heapSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 7,
+        line: { js: 14, py: 12 },
         narrate: `${a[largest]} > parent → swap to maintain max-heap property.`,
       };
       yield* heapify(size, largest);
@@ -469,7 +469,7 @@ export function* heapSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 12,
+      line: { js: 3, py: 3 },
       narrate: `Building max-heap: heapifying subtree rooted at ${i}.`,
     };
     yield* heapify(n, i);
@@ -481,7 +481,7 @@ export function* heapSort(arr) {
     swaps,
     passes,
     arr: [...a],
-    line: 13,
+    line: { js: 4, py: 4 },
     narrate: "Max-heap built! Root is now the maximum element.",
   };
 
@@ -497,7 +497,7 @@ export function* heapSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 16,
+      line: { js: 5, py: 5 },
       narrate: `Root (max=${a[i]}) swapped to position ${i} — its final place.`,
     };
     yield {
@@ -507,7 +507,7 @@ export function* heapSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 17,
+      line: { js: 6, py: 6 },
       narrate: `Position ${i} sorted. Heap size shrinks to ${i}.`,
     };
     yield* heapify(i, 0);
@@ -519,7 +519,7 @@ export function* heapSort(arr) {
     swaps,
     passes,
     arr: [...a],
-    line: 0,
+    line: { js: 0, py: 0 },
     narrate: "Last element sorted!",
   };
   yield {
@@ -549,7 +549,7 @@ export function* countingSort(arr: number[]) {
     swaps: 0,
     passes,
     arr: [...a],
-    line: 2,
+    line: { js: 2, py: 2 },
     narrate: `Max value = ${max}. Creating count array.`,
   };
 
@@ -563,7 +563,7 @@ export function* countingSort(arr: number[]) {
       swaps: 0,
       passes,
       arr: [...a],
-      line: 4,
+      line: { js: 3, py: 4 },
       narrate: `Counting: value ${a[i]} → count[${a[i]}] = ${count[a[i]]}`,
     };
   }
@@ -575,7 +575,7 @@ export function* countingSort(arr: number[]) {
     swaps: 0,
     passes,
     arr: [...a],
-    line: 6,
+    line: { js: 5, py: 6 },
     narrate: "Rebuilding sorted array from counts.",
   };
 
@@ -595,7 +595,7 @@ export function* countingSort(arr: number[]) {
         swaps: writes,
         passes,
         arr: [...a],
-        line: 9,
+        line: { js: 6, py: 7 },
         narrate: `Placed ${v} at position ${pos}`,
       };
 
@@ -644,7 +644,7 @@ export function* radixSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 3,
+      line: { js: 3, py: 4 },
       narrate: `Pass ${passes}: sorting by digit at place value ${exp}. Looking at the ${exp === 1 ? "ones" : exp === 10 ? "tens" : "hundreds"} digit.`,
     };
 
@@ -658,7 +658,7 @@ export function* radixSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 5,
+        line: { js: 11, py: 12 },
         narrate: `${a[i]} → digit ${digit(a[i])} → count[${digit(a[i])}]=${count[digit(a[i])]}.`,
       };
     }
@@ -680,7 +680,7 @@ export function* radixSort(arr) {
         swaps,
         passes,
         arr: [...a],
-        line: 10,
+        line: { js: 15, py: 17 },
         narrate: `Placed ${a[i]} at position ${i} after digit-${exp} sort.`,
       };
     }
@@ -693,7 +693,7 @@ export function* radixSort(arr) {
       swaps,
       passes,
       arr: [...a],
-      line: 0,
+      line: { js: 0, py: 0 },
       narrate: "",
     };
   yield {
