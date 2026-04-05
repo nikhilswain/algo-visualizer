@@ -39,7 +39,7 @@ type State = {
   sortArr: number[];
   sortColors: string[];
   sortedSet: Set<number>;
-  activeLine: number;
+  activeLine: { js: number; py: number };
 
   grid: Grid;
   gridColors: string[][];
@@ -74,7 +74,7 @@ type Action =
   | { type: "SET_SORT_COLORS"; payload: string[] }
   | { type: "SET_SORTED"; payload: number[] }
   | { type: "SET_SORT_ARR"; payload: number[] }
-  | { type: "SET_ACTIVE_LINE"; payload: number }
+  | { type: "SET_ACTIVE_LINE"; payload: { js: number; py: number } }
   | { type: "SET_GRID"; payload: Grid }
   | { type: "SET_GRID_COLORS"; payload: string[][] }
   | { type: "SET_CELL"; r: number; c: number; val: CellType }
@@ -110,7 +110,7 @@ const initState: State = {
   sortArr: [],
   sortColors: [],
   sortedSet: new Set(),
-  activeLine: -1,
+  activeLine: { js: -1, py: -1 },
 
   grid: addDefaultWalls(makeGrid()),
   gridColors: Array.from({ length: GRID_ROWS }, () =>
@@ -163,7 +163,7 @@ function reducer(state: State, action: Action): State {
         algoKey: action.payload,
         running: false,
         paused: false,
-        activeLine: -1,
+        activeLine: { js: -1, py: -1 },
       };
     case "SET_STATS":
       return { ...state, stats: { ...state.stats, ...action.payload } };

@@ -26,7 +26,8 @@ function tokenize(line) {
 
 export default function CodePanel() {
   const { state, dispatch } = useStore();
-  const { category, algoKey, lang, activeLine } = state;
+  const { category, algoKey, lang, activeLine: activeLineObj } = state;
+  const activeLine = activeLineObj[lang] ?? -1;
 
   const algo = category === "sort" ? SORT_ALGOS[algoKey] : PATH_ALGOS[algoKey];
   if (!algo?.code) return null;

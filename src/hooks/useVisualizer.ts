@@ -17,7 +17,7 @@ type SortStep = {
   comps?: number;
   swaps?: number;
   passes?: number;
-  line?: number;
+  line?: { js: number; py: number };
   narrate?: string;
 };
 
@@ -96,7 +96,7 @@ export function useVisualizer() {
         payload: Array(arr.length).fill(COLORS.idle),
       });
       dispatch({ type: "SET_SORTED", payload: [] });
-      dispatch({ type: "SET_ACTIVE_LINE", payload: -1 });
+      dispatch({ type: "SET_ACTIVE_LINE", payload: { js: -1, py: -1 } });
 
       dispatch({
         type: "SET_STATS",
