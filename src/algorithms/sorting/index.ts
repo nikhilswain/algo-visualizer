@@ -532,10 +532,13 @@ export function* heapSort(arr) {
   };
 }
 
-export function* countingSort(arr) {
+export function* countingSort(arr: number[]) {
   const a = [...arr];
   const n = a.length;
+
   let passes = 0;
+  let writes = 0;
+
   const max = Math.max(...a);
   const count = new Array(max + 1).fill(0);
 
@@ -547,61 +550,77 @@ export function* countingSort(arr) {
     passes,
     arr: [...a],
     line: 2,
-    narrate: `Max value = ${max}. Creating count array of size ${max + 1}.`,
+    narrate: `Max value = ${max}. Creating count array.`,
   };
 
   for (let i = 0; i < n; i++) {
     count[a[i]]++;
+
     yield {
-      type: "compare",
-      i,
-      j: i,
-      comps: i + 1,
+      type: "current",
+      idx: i,
+      comps: 0,
       swaps: 0,
       passes,
       arr: [...a],
       line: 4,
-      narrate: `Counting: value ${a[i]} → count[${a[i]}] = ${count[a[i]]}.`,
+      narrate: `Counting: value ${a[i]} → count[${a[i]}] = ${count[a[i]]}`,
     };
   }
 
   yield {
     type: "current",
     idx: 0,
-    comps: n,
+    comps: 0,
     swaps: 0,
     passes,
     arr: [...a],
     line: 6,
-    narrate: "All values counted. Rebuilding sorted array from counts.",
+    narrate: "Rebuilding sorted array from counts.",
   };
 
   let pos = 0;
+
   for (let v = 0; v <= max; v++) {
     while (count[v] > 0) {
-      passes++;
       a[pos] = v;
       count[v]--;
+      writes++;
+      passes++;
+
       yield {
-        type: "sorted",
+        type: "current",
         idx: pos,
-        comps: n,
-        swaps: pos + 1,
+        comps: 0,
+        swaps: writes,
         passes,
         arr: [...a],
         line: 9,
-        narrate: `Placing value ${v} at position ${pos}. No comparisons needed!`,
+        narrate: `Placed ${v} at position ${pos}`,
       };
+
       pos++;
     }
   }
+
+  for (let i = 0; i < n; i++) {
+    yield {
+      type: "sorted",
+      idx: i,
+      comps: 0,
+      swaps: writes,
+      passes,
+      arr: [...a],
+    };
+  }
+
   yield {
     type: "done",
-    comps: n,
-    swaps: pos,
+    comps: 0,
+    swaps: writes,
     passes,
     arr: [...a],
-    narrate: `Done! Counting sort: O(n+k) — faster than comparison sorts for small value ranges!`,
+    narrate: `Done! Counting sort: O(n+k). Writes: ${writes}.`,
   };
 }
 

@@ -1,3 +1,4 @@
+import { SORT_ALGOS } from "../../algorithms/sorting";
 import { useStore } from "../../store";
 import { COLORS as C } from "../../theme";
 
@@ -42,11 +43,34 @@ export default function StatsBar() {
   const { state } = useStore();
   const { category, stats } = state;
 
-  const sortStats = [
-    { label: "comparisons", value: stats.comps, color: C.compare },
-    { label: "swaps", value: stats.swaps, color: C.swap },
-    { label: "passes", value: stats.passes, color: C.current },
-    { label: "array size", value: 38, color: C.textMuted },
+  const algo = SORT_ALGOS[state.algoKey];
+  const isNonComparison = algo?.category === "non-comparison";
+
+  const statsConfig = [
+    {
+      key: "comps",
+      label: isNonComparison ? "operations" : "comparisons",
+      value: isNonComparison ? stats.passes : stats.comps,
+      color: C.compare,
+    },
+    {
+      key: "swaps",
+      label: isNonComparison ? "writes" : "swaps",
+      value: stats.swaps,
+      color: C.swap,
+    },
+    {
+      key: "passes",
+      label: "passes",
+      value: stats.passes,
+      color: C.current,
+    },
+    {
+      key: "size",
+      label: "array size",
+      value: state.sortArr.length,
+      color: C.textMuted,
+    },
   ];
 
   const pathStats = [
@@ -60,7 +84,7 @@ export default function StatsBar() {
     { label: "grid size", value: "18×28", color: C.textMuted },
   ];
 
-  const items = category === "sort" ? sortStats : pathStats;
+  const items = category === "sort" ? statsConfig : pathStats;
 
   return (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

@@ -127,6 +127,10 @@ export function useVisualizer() {
     ): Promise<boolean> => {
       const d = Math.round(500 / speedRef.current);
 
+      if (step.arr) {
+        dispatch({ type: "SET_SORT_ARR", payload: [...step.arr] });
+      }
+
       dispatch({
         type: "SET_STATS",
         payload: {
@@ -180,6 +184,7 @@ export function useVisualizer() {
 
         dispatch({ type: "SET_SORT_COLORS", payload: [...cols] });
         dispatch({ type: "SET_SORTED", payload: [...sorted] });
+        dispatch({ type: "SET_SORT_ARR", payload: [...step.arr] });
       } else if (step.type === "pivot") {
         cols[step.idx!] = COLORS.pivot;
         colorsRef.current = cols;
@@ -204,6 +209,7 @@ export function useVisualizer() {
         });
 
         dispatch({ type: "SET", payload: { running: false, paused: false } });
+        dispatch({ type: "SET_SORT_ARR", payload: [...step.arr] });
 
         runRef.current = false;
         genRef.current = null;
