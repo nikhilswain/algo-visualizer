@@ -1,6 +1,6 @@
 # Algo Visualiser
 
-> An interactive algorithm visualizer built with React — watch sorting and pathfinding algorithms execute step by step, with plain-English narration and live code sync.
+> An interactive algorithm visualizer built with React — watch sorting, pathfinding, and graph algorithms execute step by step, with plain-English narration and live code sync.
 
 **→ [github.com/nikhilswain/algo-visualiser](https://github.com/nikhilswain/algo-visualiser)**
 
@@ -50,6 +50,17 @@ Every algorithm narrates each comparison, swap, and pass in plain English, with 
 
 The pathfinding grid is fully interactive — draw walls, place weighted cells (cost ×3), drag start and end markers anywhere, and watch each algorithm carve through the grid differently.
 
+### Graph — 4 algorithms
+
+| Algorithm        | Type             | Complexity  | Notes                                      |
+| ---------------- | ---------------- | ----------- | ------------------------------------------ |
+| Kruskal's MST    | Minimum spanning | O(E log E)  | Sort edges, greedily add via Union-Find     |
+| Prim's MST       | Minimum spanning | O(E log V)  | Grow tree from seed, always cheapest edge   |
+| Topological Sort | Ordering         | O(V + E)    | Kahn's algorithm — dependency resolution    |
+| Cycle Detection  | Analysis         | O(V + E)    | DFS coloring — white/gray/black back edges  |
+
+SVG-based visualization with animated node and edge coloring. Preset graphs include a DAG, weighted undirected graph, and directed graphs with and without cycles.
+
 ---
 
 ## Features
@@ -62,7 +73,7 @@ The pathfinding grid is fully interactive — draw walls, place weighted cells (
 
 **Heuristic toggle for A\*** — Switch between Manhattan, Euclidean, and Diagonal distance heuristics and see how each changes which cells A\* explores.
 
-**Grid presets** — One-click: Clear, Default walls, Maze, Dense obstacles, Weighted terrain.
+**Grid presets** — One-click: Clear, Default walls, Maze, Dense obstacles, Weighted terrain. Graph presets: DAG, Weighted, Directed (cycle), Directed (no cycle).
 
 **"What" and "When"** — Every algorithm has a plain-English description of how it works and a real-world use case for when you'd actually reach for it.
 
@@ -93,25 +104,27 @@ No external runtime dependencies beyond React. Uses CSS transitions and native J
 
 ```
 src/
-├── App.jsx                          # Root layout
-├── theme.js                         # Design tokens (colors, fonts)
+├── App.tsx                          # Root layout
+├── theme.ts                         # Design tokens (colors, fonts)
 ├── store/
-│   └── index.jsx                    # Global state — useReducer + Context
+│   └── index.tsx                    # Global state — useReducer + Context
 ├── hooks/
-│   └── useVisualizer.js             # Run / step / pause / reset logic
+│   └── useVisualizer.ts             # Run / step / pause / reset logic
 ├── algorithms/
-│   ├── sorting/index.js             # All 8 sort generators
-│   └── pathfinding/index.js         # All 6 path generators
+│   ├── sorting/index.ts             # All 8 sort generators
+│   ├── pathfinding/index.ts         # All 6 path generators
+│   └── graph/index.ts               # All 4 graph generators
 └── components/
     ├── Bars/                        # Sorting bar chart
     ├── Grid/                        # Pathfinding grid + wall drawing
+    ├── Graph/                       # SVG graph visualization + presets
     ├── CodePanel/                   # Syntax-highlighted code + line sync
     ├── Narrator/                    # Plain-English step explanation
     ├── Controls/                    # Run / pause / step / reset + presets
     └── Layout/
-        ├── TopBar.jsx               # Category tabs + algo picker + complexity badges
-        ├── StatsBar.jsx             # Live stats (comparisons, swaps, visited...)
-        └── SortLegend.jsx           # Color legend
+        ├── TopBar.tsx               # Category tabs + algo picker + complexity badges
+        ├── StatsBar.tsx             # Live stats (comparisons, swaps, visited...)
+        └── SortLegend.tsx           # Color legend
 ```
 
 ---
@@ -130,7 +143,7 @@ Every algorithm is a JavaScript generator function that `yield`s step objects. T
   swaps: 4,           // running swap count
   passes: 2,          // current pass number
   arr: [...],         // full array snapshot at this step
-  line: 4,            // line to highlight in the code panel
+  line: { js: 4, py: 3 }, // line to highlight per language
   msg: 'Comparing [3]=7 vs [5]=2. Out of order → swap.',
 }
 
@@ -144,6 +157,18 @@ Every algorithm is a JavaScript generator function that `yield`s step objects. T
   visited: 42,         // total cells visited so far
   frontier: 18,        // current frontier size
   msg: 'Expanding (5,8) — g=6, h=4, f=10.',
+}
+
+// Example step object (graph)
+{
+  type: 'consider-edge', // visit-node | consider-edge | add-edge | reject-edge | cycle-found | done
+  from: 'A',
+  to: 'B',
+  edgesProcessed: 3,
+  mstWeight: 6,
+  mstEdges: 2,
+  line: { js: 7, py: 7 },
+  narrate: 'Considering edge A-B (weight 4). Do A and B belong to different components?',
 }
 ```
 
@@ -167,12 +192,12 @@ Adding a new algorithm means writing one generator function and one config entry
 - [ ] Theta* — any-angle pathfinding, smoother paths than grid-constrained A*
 - [ ] IDA* — iterative deepening A*, memory-efficient for large grids
 
-**Graph algorithms** _(new category)_
+**Graph algorithms** _(done)_
 
-- [ ] Topological Sort — DAG visualization, dependency resolution
-- [ ] Cycle Detection — directed and undirected graphs
-- [ ] Kruskal's MST — minimum spanning tree with edge weight visualization
-- [ ] Prim's MST — grow the tree from a seed node
+- [x] Topological Sort — DAG visualization, dependency resolution
+- [x] Cycle Detection — DFS coloring with back edge detection
+- [x] Kruskal's MST — minimum spanning tree with edge weight visualization
+- [x] Prim's MST — grow the tree from a seed node
 
 **Tree / data structures** _(new category)_
 
@@ -220,11 +245,11 @@ Adding a new algorithm means writing one generator function and one config entry
 
 The easiest contribution is adding a new algorithm:
 
-1. Write a generator function in `src/algorithms/sorting/index.js` or `src/algorithms/pathfinding/index.js`
+1. Write a generator function in `src/algorithms/sorting/index.ts`, `src/algorithms/pathfinding/index.ts`, or `src/algorithms/graph/index.ts`
 2. Add a config entry with `label`, `complexity`, `info`, `why`, `code` (JS + Python), and your generator as `fn`
 3. The UI picks it up automatically — no other changes needed
 
-For new algorithm categories (graph, tree, DP), add a file under `src/algorithms/`, create a corresponding component in `src/components/`, and wire it into `TopBar.jsx` and `useVisualizer.js`.
+For new algorithm categories (tree, DP), add a file under `src/algorithms/`, create a corresponding component in `src/components/`, and wire it into `TopBar.tsx` and `useVisualizer.ts`.
 
 Open an issue before starting a big feature so we can align on approach.
 
