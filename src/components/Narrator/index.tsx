@@ -12,6 +12,13 @@ const TYPE_COLORS = {
   frontier: C.purple,
   path: C.purple,
   done: C.teal,
+  "visit-node": C.current,
+  "consider-edge": C.pivot,
+  "add-edge": C.sorted,
+  "reject-edge": C.swap,
+  "add-to-order": C.sorted,
+  "finish-node": C.purple,
+  "cycle-found": C.swap,
 };
 
 export default function Narrator() {

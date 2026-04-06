@@ -84,7 +84,14 @@ export default function StatsBar() {
     { label: "grid size", value: "18×28", color: C.textMuted },
   ];
 
-  const items = category === "sort" ? statsConfig : pathStats;
+  const graphStats = [
+    { label: "edges processed", value: stats.comps, color: C.blue },
+    { label: "MST weight", value: stats.swaps || "-", color: C.purple },
+    { label: "edges in result", value: stats.passes || "-", color: C.sorted },
+    { label: "nodes", value: state.graphData?.nodes?.length || 0, color: C.textMuted },
+  ];
+
+  const items = category === "sort" ? statsConfig : category === "path" ? pathStats : graphStats;
 
   return (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef } from "react";
 import { useStore } from "../store";
 import { SORT_ALGOS } from "../algorithms/sorting";
 import { PATH_ALGOS } from "../algorithms/pathfinding";
+import { GRAPH_ALGOS } from "../algorithms/graph";
+import { defaultPresetForAlgo } from "../components/Graph/presets";
 import { GRID_COLS_N, GRID_ROWS_N } from "../constants";
 
 /* ---------- types ---------- */
@@ -33,6 +35,18 @@ type PathStep = {
   gCost?: number;
   hCost?: number;
   fCost?: number;
+};
+
+type GraphStep = {
+  type: string;
+  nodeId?: string;
+  from?: string;
+  to?: string;
+  narrate?: string;
+  line?: { js: number; py: number };
+  edgesProcessed?: number;
+  mstWeight?: number;
+  mstEdges?: number;
 };
 
 type ColorsRef = { current: string[] };
@@ -111,6 +125,46 @@ export function useVisualizer() {
           step: "ready",
           msg: `${SORT_ALGOS[key].label} Sort — array of ${arr.length} elements shuffled. Press Run or Step.`,
           why: SORT_ALGOS[key].why,
+        },
+      });
+
+      dispatch({ type: "RESET_HISTORY" });
+    },
+    [algoKey, dispatch, genRef, runRef],
+  );
+
+  /* ---------- GRAPH ---------- */
+
+  const initGraph = useCallback(
+    (key: string = algoKey) => {
+      runRef.current = false;
+      genRef.current = null;
+
+      const graphData = defaultPresetForAlgo(key);
+      dispatch({ type: "SET_GRAPH_DATA", payload: graphData });
+      dispatch({ type: "RESET_GRAPH_COLORS" });
+      dispatch({ type: "SET_ACTIVE_LINE", payload: { js: -1, py: -1 } });
+
+      dispatch({
+        type: "SET_STATS",
+        payload: {
+          comps: 0,
+          swaps: 0,
+          passes: 0,
+          visited: 0,
+          frontier: 0,
+          pathLen: 0,
+        },
+      });
+
+      dispatch({ type: "SET", payload: { running: false, paused: false } });
+
+      dispatch({
+        type: "SET_NARRATOR",
+        payload: {
+          step: "ready",
+          msg: `${GRAPH_ALGOS[key].label} — select a preset graph and press Run.`,
+          why: GRAPH_ALGOS[key].why,
         },
       });
 
@@ -324,6 +378,90 @@ export function useVisualizer() {
     [dispatch, pathStart, pathEnd, runRef, genRef],
   );
 
+  const processGraphStep = useCallback(
+    async (
+      step: GraphStep,
+      nodeColorsRef: { current: Record<string, string> },
+      edgeColorsRef: { current: Record<string, string> },
+    ): Promise<boolean> => {
+      const d = Math.max(80, Math.round(400 / speedRef.current));
+
+      dispatch({
+        type: "SET_STATS",
+        payload: {
+          comps: step.edgesProcessed || 0,
+          swaps: step.mstWeight || 0,
+          passes: step.mstEdges || 0,
+        },
+      });
+
+      if (step.line !== undefined)
+        dispatch({ type: "SET_ACTIVE_LINE", payload: step.line });
+
+      if (step.narrate)
+        dispatch({
+          type: "SET_NARRATOR",
+          payload: { step: step.type, msg: step.narrate, why: "" },
+        });
+
+      const nc = { ...nodeColorsRef.current };
+      const ec = { ...edgeColorsRef.current };
+
+      if (step.type === "visit-node" && step.nodeId) {
+        nc[step.nodeId] = "visiting";
+        nodeColorsRef.current = nc;
+        dispatch({ type: "SET_GRAPH_NODE_COLORS", payload: { ...nc } });
+        await sleep(d);
+      } else if (step.type === "consider-edge" && step.from && step.to) {
+        ec[`${step.from}-${step.to}`] = "considering";
+        edgeColorsRef.current = ec;
+        dispatch({ type: "SET_GRAPH_EDGE_COLORS", payload: { ...ec } });
+        await sleep(d * 0.6);
+      } else if (step.type === "add-edge" && step.from && step.to) {
+        ec[`${step.from}-${step.to}`] = "included";
+        nc[step.from] = "result";
+        nc[step.to] = "result";
+        nodeColorsRef.current = nc;
+        edgeColorsRef.current = ec;
+        dispatch({ type: "SET_GRAPH_NODE_COLORS", payload: { ...nc } });
+        dispatch({ type: "SET_GRAPH_EDGE_COLORS", payload: { ...ec } });
+        await sleep(d);
+      } else if (step.type === "reject-edge" && step.from && step.to) {
+        ec[`${step.from}-${step.to}`] = "rejected";
+        edgeColorsRef.current = ec;
+        dispatch({ type: "SET_GRAPH_EDGE_COLORS", payload: { ...ec } });
+        await sleep(d * 0.4);
+      } else if (step.type === "add-to-order" && step.nodeId) {
+        nc[step.nodeId] = "result";
+        nodeColorsRef.current = nc;
+        dispatch({ type: "SET_GRAPH_NODE_COLORS", payload: { ...nc } });
+        await sleep(d);
+      } else if (step.type === "finish-node" && step.nodeId) {
+        nc[step.nodeId] = "visited";
+        nodeColorsRef.current = nc;
+        dispatch({ type: "SET_GRAPH_NODE_COLORS", payload: { ...nc } });
+        await sleep(d * 0.4);
+      } else if (step.type === "cycle-found" && step.from && step.to) {
+        nc[step.from] = "cycle";
+        nc[step.to] = "cycle";
+        ec[`${step.from}-${step.to}`] = "included";
+        nodeColorsRef.current = nc;
+        edgeColorsRef.current = ec;
+        dispatch({ type: "SET_GRAPH_NODE_COLORS", payload: { ...nc } });
+        dispatch({ type: "SET_GRAPH_EDGE_COLORS", payload: { ...ec } });
+        await sleep(d * 2);
+      } else if (step.type === "done") {
+        dispatch({ type: "SET", payload: { running: false, paused: false } });
+        runRef.current = false;
+        genRef.current = null;
+        return false;
+      }
+
+      return true;
+    },
+    [speedRef, dispatch, runRef, genRef],
+  );
+
   /* ---------- RUN / CONTROL ---------- */
 
   const run = useCallback(async () => {
@@ -356,7 +494,7 @@ export function useVisualizer() {
         const cont = await processSortStep(step, sortedSetRef, colorsRef);
         if (!cont) break;
       }
-    } else {
+    } else if (category === "path") {
       dispatch({ type: "RESET_GRID_COLORS" });
 
       const colorsRef: GridColorsRef = {
@@ -393,17 +531,45 @@ export function useVisualizer() {
         const cont = await processPathStep(step, colorsRef, cellDataRef);
         if (!cont) break;
       }
+    } else if (category === "graph") {
+      dispatch({ type: "RESET_GRAPH_COLORS" });
+
+      const nodeColorsRef = { current: {} as Record<string, string> };
+      const edgeColorsRef = { current: {} as Record<string, string> };
+
+      const algo = GRAPH_ALGOS[algoKey];
+      genRef.current = algo.fn(state.graphData);
+
+      runRef.current = true;
+      dispatch({ type: "SET", payload: { running: true, paused: false } });
+
+      while (runRef.current) {
+        while (pauseRef.current) await sleep(50);
+
+        const { value: step, done } = genRef.current.next();
+
+        if (done || !step) {
+          dispatch({ type: "SET", payload: { running: false } });
+          runRef.current = false;
+          break;
+        }
+
+        const cont = await processGraphStep(step, nodeColorsRef, edgeColorsRef);
+        if (!cont) break;
+      }
     }
   }, [
     category,
     algoKey,
     state.sortArr,
+    state.graphData,
     grid,
     pathStart,
     pathEnd,
     heuristic,
     processSortStep,
     processPathStep,
+    processGraphStep,
     dispatch,
     runRef,
     pauseRef,
@@ -423,7 +589,8 @@ export function useVisualizer() {
     dispatch({ type: "SET", payload: { running: false, paused: false } });
 
     if (category === "sort") initSort(algoKey);
-    else initPath(algoKey);
+    else if (category === "path") initPath(algoKey);
+    else if (category === "graph") initGraph(algoKey);
   }, [
     runRef,
     pauseRef,
@@ -433,6 +600,7 @@ export function useVisualizer() {
     algoKey,
     initSort,
     initPath,
+    initGraph,
   ]);
 
   const stepOnce = useCallback(async () => {
@@ -448,7 +616,7 @@ export function useVisualizer() {
       if (done || !step) return;
 
       await processSortStep(step, sortedSetRef, colorsRef);
-    } else {
+    } else if (category === "path") {
       const colorsRef: GridColorsRef = {
         current: state.gridColors.map((r) => [...r]),
       };
@@ -472,6 +640,20 @@ export function useVisualizer() {
       if (done || !step) return;
 
       await processPathStep(step, colorsRef, cellDataRef);
+    } else if (category === "graph") {
+      const nodeColorsRef = { current: { ...state.graphNodeColors } };
+      const edgeColorsRef = { current: { ...state.graphEdgeColors } };
+
+      if (!genRef.current) {
+        dispatch({ type: "RESET_GRAPH_COLORS" });
+        const algo = GRAPH_ALGOS[algoKey];
+        genRef.current = algo.fn(state.graphData);
+      }
+
+      const { value: step, done } = genRef.current.next();
+      if (done || !step) return;
+
+      await processGraphStep(step, nodeColorsRef, edgeColorsRef);
     }
   }, [
     category,
@@ -483,6 +665,7 @@ export function useVisualizer() {
     heuristic,
     processSortStep,
     processPathStep,
+    processGraphStep,
     dispatch,
     genRef,
   ]);
@@ -514,5 +697,5 @@ export function useVisualizer() {
     return () => window.removeEventListener("keydown", handler);
   }, [state.running]);
 
-  return { run, pause, stop, stepOnce, initSort, initPath, COLORS };
+  return { run, pause, stop, stepOnce, initSort, initPath, initGraph, COLORS };
 }

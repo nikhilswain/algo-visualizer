@@ -6,6 +6,7 @@ import type { ReactNode, Dispatch, RefObject } from "react";
 import { addDefaultWalls } from "../utils/addDefaultWalls";
 import { makeGrid } from "../utils/makeGrid";
 import type { CellType, Grid } from "../types";
+import type { GraphData } from "../components/Graph/presets";
 import { GRID_COLS, GRID_ROWS } from "../constants";
 
 type Stats = {
@@ -31,7 +32,7 @@ type CellMeta = {
 };
 
 type State = {
-  category: "sort" | "path";
+  category: "sort" | "path" | "graph";
   algoKey: string;
   lang: "js" | "py";
   heuristic: string;
@@ -48,6 +49,10 @@ type State = {
   inspectedCell: [number, number] | null;
   cellData: Record<string, CellMeta>;
   heatmap: number[][] | null;
+
+  graphData: GraphData;
+  graphNodeColors: Record<string, string>;
+  graphEdgeColors: Record<string, string>;
 
   running: boolean;
   paused: boolean;
@@ -85,7 +90,11 @@ type Action =
   | { type: "PUSH_HISTORY"; payload: any }
   | { type: "SET_HIST_IDX"; payload: number }
   | { type: "RESET_HISTORY" }
-  | { type: "RESET_GRID_COLORS" };
+  | { type: "RESET_GRID_COLORS" }
+  | { type: "SET_GRAPH_DATA"; payload: GraphData }
+  | { type: "SET_GRAPH_NODE_COLORS"; payload: Record<string, string> }
+  | { type: "SET_GRAPH_EDGE_COLORS"; payload: Record<string, string> }
+  | { type: "RESET_GRAPH_COLORS" };
 
 type CtxType = {
   state: State;
@@ -121,6 +130,10 @@ const initState: State = {
   inspectedCell: null,
   cellData: {},
   heatmap: null,
+
+  graphData: { nodes: [], edges: [] },
+  graphNodeColors: {},
+  graphEdgeColors: {},
 
   running: false,
   paused: false,
@@ -218,6 +231,14 @@ function reducer(state: State, action: Action): State {
         cellData: {},
         heatmap: null,
       };
+    case "SET_GRAPH_DATA":
+      return { ...state, graphData: action.payload };
+    case "SET_GRAPH_NODE_COLORS":
+      return { ...state, graphNodeColors: action.payload };
+    case "SET_GRAPH_EDGE_COLORS":
+      return { ...state, graphEdgeColors: action.payload };
+    case "RESET_GRAPH_COLORS":
+      return { ...state, graphNodeColors: {}, graphEdgeColors: {} };
     default:
       return state;
   }

@@ -2,6 +2,7 @@ import { useStore } from "../../store";
 import { useVisualizer } from "../../hooks/useVisualizer";
 import { SORT_ALGOS } from "../../algorithms/sorting";
 import { PATH_ALGOS } from "../../algorithms/pathfinding";
+import { GRAPH_ALGOS } from "../../algorithms/graph";
 import { COLORS as C } from "../../theme";
 
 const HEURISTICS = ["manhattan", "euclidean", "diagonal"];
@@ -26,24 +27,26 @@ function Tag({ children, color }) {
 export default function TopBar() {
   const { state, dispatch } = useStore();
   const { category, algoKey, heuristic, running } = state;
-  const { initSort, initPath } = useVisualizer();
+  const { initSort, initPath, initGraph } = useVisualizer();
 
-  const algos = category === "sort" ? SORT_ALGOS : PATH_ALGOS;
+  const algos = category === "sort" ? SORT_ALGOS : category === "path" ? PATH_ALGOS : GRAPH_ALGOS;
   const algo = algos[algoKey];
 
   const switchCategory = (cat) => {
     dispatch({ type: "SET_CATEGORY", payload: cat });
-    const defaultKey = cat === "sort" ? "bubble" : "astar";
+    const defaultKey = cat === "sort" ? "bubble" : cat === "path" ? "astar" : "kruskal";
     dispatch({ type: "SET_ALGO", payload: defaultKey });
     if (cat === "sort") initSort(defaultKey);
-    else initPath(defaultKey);
+    else if (cat === "path") initPath(defaultKey);
+    else initGraph(defaultKey);
   };
 
   const switchAlgo = (key) => {
     if (running) return;
     dispatch({ type: "SET_ALGO", payload: key });
     if (category === "sort") initSort(key);
-    else initPath(key);
+    else if (category === "path") initPath(key);
+    else initGraph(key);
   };
 
   return (
@@ -58,7 +61,7 @@ export default function TopBar() {
         }}
       >
         <div style={{ display: "flex", gap: 4 }}>
-          {["sort", "path"].map((cat) => (
+          {(["sort", "path", "graph"] as const).map((cat) => (
             <button
               key={cat}
               onClick={() => switchCategory(cat)}
@@ -75,7 +78,7 @@ export default function TopBar() {
                 transition: "all .15s",
               }}
             >
-              {cat === "sort" ? "Sorting" : "Pathfinding"}
+              {cat === "sort" ? "Sorting" : cat === "path" ? "Pathfinding" : "Graph"}
             </button>
           ))}
         </div>
