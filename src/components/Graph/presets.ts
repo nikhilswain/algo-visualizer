@@ -78,10 +78,10 @@ const cyclePreset: GraphData = {
   edges: [
     { from: "A", to: "B", directed: true },
     { from: "B", to: "C", directed: true },
-    { from: "C", to: "F", directed: true },
-    { from: "A", to: "D", directed: true },
-    { from: "D", to: "E", directed: true },
+    { from: "C", to: "E", directed: true },
     { from: "E", to: "B", directed: true },
+    { from: "A", to: "D", directed: true },
+    { from: "D", to: "F", directed: true },
   ],
 };
 

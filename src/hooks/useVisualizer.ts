@@ -417,6 +417,11 @@ export function useVisualizer() {
         edgeColorsRef.current = ec;
         dispatch({ type: "SET_GRAPH_EDGE_COLORS", payload: { ...ec } });
         await sleep(d * 0.6);
+        // Auto-transition to included after showing yellow;
+        // for Kruskal/Prim the next add-edge/reject-edge step overrides immediately
+        ec[`${step.from}-${step.to}`] = "included";
+        edgeColorsRef.current = ec;
+        dispatch({ type: "SET_GRAPH_EDGE_COLORS", payload: { ...ec } });
       } else if (step.type === "add-edge" && step.from && step.to) {
         ec[`${step.from}-${step.to}`] = "included";
         nc[step.from] = "result";
