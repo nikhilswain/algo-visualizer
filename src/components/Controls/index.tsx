@@ -96,10 +96,10 @@ export default function Controls() {
           </span>
           <input
             type="range"
-            min="1"
-            max="20"
+            min="2"
+            max="50"
             value={speed}
-            step="1"
+            step="2"
             onChange={(e) =>
               dispatch({ type: "SET", payload: { speed: +e.target.value } })
             }

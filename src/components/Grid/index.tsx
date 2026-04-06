@@ -204,6 +204,7 @@ export default function GridViz() {
           border: `1px solid ${C.border}`,
           userSelect: "none",
           cursor: drawTool === "erase" ? "crosshair" : "cell",
+          width: "100%",
           maxWidth: 880,
           margin: "0 auto",
         }}
