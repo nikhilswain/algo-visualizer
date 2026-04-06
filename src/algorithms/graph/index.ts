@@ -156,10 +156,9 @@ export function* primMST(graph: GraphData) {
     mstEdges++;
 
     yield {
-      type: "add-edge",
-      from: best.from,
-      to: best.to,
-      narrate: `Cheapest crossing edge: ${best.from}-${best.to} (weight ${best.weight}). Add node ${best.to} to MST. Total weight = ${mstWeight}.`,
+      type: "visit-node",
+      nodeId: best.to,
+      narrate: `Node ${best.to} joins the MST (${inMST.size}/${graph.nodes.length} nodes).`,
       line: { js: 10, py: 10 },
       edgesProcessed: processed,
       mstWeight,
@@ -167,9 +166,10 @@ export function* primMST(graph: GraphData) {
     };
 
     yield {
-      type: "visit-node",
-      nodeId: best.to,
-      narrate: `Node ${best.to} is now in the MST (${inMST.size}/${graph.nodes.length} nodes).`,
+      type: "add-edge",
+      from: best.from,
+      to: best.to,
+      narrate: `Cheapest crossing edge: ${best.from}-${best.to} (weight ${best.weight}). Total weight = ${mstWeight}.`,
       line: { js: 11, py: 11 },
       edgesProcessed: processed,
       mstWeight,

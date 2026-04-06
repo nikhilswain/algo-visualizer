@@ -199,8 +199,10 @@ export default function GraphViz() {
             ["visiting", NODE_COLORS.visiting],
             ["visited", NODE_COLORS.visited],
             ["result", NODE_COLORS.result],
+            ["cycle", NODE_COLORS.cycle],
             ["considering", EDGE_COLORS.considering],
             ["included", EDGE_COLORS.included],
+            ["rejected", EDGE_COLORS.rejected],
           ] as const
         ).map(([l, bg]) => (
           <div
