@@ -19,6 +19,33 @@ const TYPE_COLORS = {
   "add-to-order": C.sorted,
   "finish-node": C.purple,
   "cycle-found": C.swap,
+  // tree
+  init: C.textMuted,
+  insert: C.sorted,
+  found: C.sorted,
+  "not-found": C.swap,
+  "delete-leaf": C.swap,
+  "delete-one-child": C.swap,
+  "find-successor": C.pivot,
+  "delete-done": C.sorted,
+  "balance-check": C.pivot,
+  "balance-ok": C.purple,
+  "rotate-left": C.pivot,
+  "rotate-right": C.pivot,
+  // heap
+  extract: C.swap,
+  "build-done": C.sorted,
+  // trie
+  traverse: C.blue,
+  create: C.sorted,
+  "word-complete": C.sorted,
+  "search-traverse": C.blue,
+  // segment tree
+  "build-leaf": C.sorted,
+  "build-merge": C.purple,
+  "query-include": C.sorted,
+  "query-exclude": C.textMuted,
+  "query-split": C.blue,
 };
 
 export default function Narrator() {

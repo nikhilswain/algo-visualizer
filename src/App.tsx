@@ -4,11 +4,12 @@ import { useVisualizer } from "./hooks/useVisualizer";
 import TopBar from "./components/Layout/TopBar";
 import StatsBar from "./components/Layout/StatsBar";
 import SortLegend from "./components/Layout/SortLegend";
-import Narrator from "./components/Narrator";
+import Logger from "./components/Logger";
 import Controls from "./components/Controls";
 import SortBars from "./components/Bars";
 import GridViz from "./components/Grid";
 import GraphViz from "./components/Graph";
+import TreeViz from "./components/Tree";
 import CodePanel from "./components/CodePanel";
 import { COLORS as C, FONT as F } from "./theme";
 
@@ -37,7 +38,7 @@ function Inner() {
     >
       <TopBar />
 
-      <Narrator />
+      <Logger />
 
       <StatsBar />
 
@@ -54,6 +55,7 @@ function Inner() {
           {category === "sort" && <SortBars />}
           {category === "path" && <GridViz />}
           {category === "graph" && <GraphViz />}
+          {category === "tree" && <TreeViz />}
           {category === "sort" && <SortLegend />}
         </div>
 

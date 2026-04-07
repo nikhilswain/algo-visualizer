@@ -1,6 +1,8 @@
 import { useStore } from "../../store";
 import { SORT_ALGOS } from "../../algorithms/sorting";
 import { PATH_ALGOS } from "../../algorithms/pathfinding";
+import { GRAPH_ALGOS } from "../../algorithms/graph";
+import { TREE_ALGOS } from "../../algorithms/tree";
 import { COLORS, FONT } from "../../theme";
 import { keywords, types } from "../../constants";
 
@@ -29,7 +31,7 @@ export default function CodePanel() {
   const { category, algoKey, lang, activeLine: activeLineObj } = state;
   const activeLine = activeLineObj[lang] ?? -1;
 
-  const algo = category === "sort" ? SORT_ALGOS[algoKey] : PATH_ALGOS[algoKey];
+  const algo = category === "sort" ? SORT_ALGOS[algoKey] : category === "path" ? PATH_ALGOS[algoKey] : category === "graph" ? GRAPH_ALGOS[algoKey] : TREE_ALGOS[algoKey];
   if (!algo?.code) return null;
 
   const code = algo.code[lang] || algo.code.js;

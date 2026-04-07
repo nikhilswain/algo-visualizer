@@ -1,14 +1,13 @@
-# Algo Visualiser
+# Algo Visualizer
 
-> An interactive algorithm visualizer built with React — watch sorting, pathfinding, and graph algorithms execute step by step, with plain-English narration and live code sync.
-
-**→ [github.com/nikhilswain/algo-visualiser](https://github.com/nikhilswain/algo-visualiser)**
-
+> An interactive algorithm visualizer that shows how algorithms work internally, step by step.
+It combines visual execution with synchronized code to make the logic, flow, and behavior easy to understand.
 ---
+![Algo Visualizer](./public/algo-visualizer.png)
 
 ## What is this?
 
-Algo Visualiser is a learning tool for understanding how algorithms actually work — not just memorizing Big O complexity, but seeing _why_ they make the decisions they do at every single step.
+Algo Visualizer is a learning tool for understanding how algorithms actually work — not just memorizing Big O complexity, but seeing _why_ they make the decisions they do at every single step.
 
 Most algorithm visualizers just show bars moving. This one narrates each operation in plain English as it happens, highlights the exact line of code being executed, and lets you step through one operation at a time so you can follow the logic yourself.
 
@@ -61,11 +60,23 @@ The pathfinding grid is fully interactive — draw walls, place weighted cells (
 
 SVG-based visualization with animated node and edge coloring. Preset graphs include a DAG, weighted undirected graph, and directed graphs with and without cycles.
 
+### Trees - 5 algorithms
+
+| Algorithm    | Type                 | Complexity                   | Notes                                                        |
+| ------------ | -------------------- | ---------------------------- | ------------------------------------------------------------ |
+| BST          | Search/Insert/Delete | O(log n) avg / O(n) worst    | Ordered tree; deletion uses inorder successor/predecessor    |
+| AVL Tree     | Self-balancing       | O(log n)                     | Rotations maintain strict height balance                     |
+| Heap         | Priority Queue       | Build: O(n), Ops: O(log n)   | Max-heap via sift-down; used in schedulers, PQs, heap sort   |
+| Trie         | String Indexing      | O(L)                         | Character-wise tree; efficient prefix search, autocomplete   |
+| Segment Tree | Range Queries        | Build: O(n), Query: O(log n) | Range aggregation + updates via recursive interval splitting |
+
+
+
 ---
 
 ## Features
 
-**Narrator** — Every single step is explained in plain English. Not just "swapping" but "5 > 3 — out of order, swapping to bubble the larger value right." The algorithm explains its own decisions.
+**Logger** — Displays each step as you progress, explaining actions in plain English. Supports jumping to any step to review or replay the algorithm flow.
 
 **Live code sync** — The exact line being executed is highlighted in the code panel as the animation plays. Toggle between JavaScript and Python. Step through manually to trace the logic line by line.
 
@@ -90,8 +101,8 @@ SVG-based visualization with animated node and edge coloring. Preset graphs incl
 ## Getting started
 
 ```bash
-git clone https://github.com/nikhilswain/algo-visualiser.git
-cd algo-visualiser
+git clone https://github.com/nikhilswain/algo-visualizer.git
+cd algo-visualizer
 npm install
 npm run dev
 ```
@@ -191,19 +202,6 @@ Adding a new algorithm means writing one generator function and one config entry
 - [ ] Jump Point Search (JPS) — optimized A\* for uniform grids, dramatically fewer expanded nodes
 - [ ] Theta* — any-angle pathfinding, smoother paths than grid-constrained A*
 - [ ] IDA* — iterative deepening A*, memory-efficient for large grids
-
-**Graph algorithms** _(done)_
-
-- [x] Topological Sort — DAG visualization, dependency resolution
-- [x] Cycle Detection — DFS coloring with back edge detection
-- [x] Kruskal's MST — minimum spanning tree with edge weight visualization
-- [x] Prim's MST — grow the tree from a seed node
-
-**Tree / data structures** _(new category)_
-
-- [ ] BST insert / delete / search
-- [ ] AVL rotations — show exactly when and why rotations happen
-- [ ] Heap build + extract — visualize the tree structure, not just the array
 
 **Dynamic programming** _(new category)_
 

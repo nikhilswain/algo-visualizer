@@ -105,7 +105,13 @@ export default function StatsBar() {
           { label: "nodes", value: state.graphData?.nodes?.length || 0, color: C.textMuted },
         ];
 
-  const items = category === "sort" ? statsConfig : category === "path" ? pathStats : graphStats;
+  const treeStats = [
+    { label: "comparisons", value: stats.comps, color: C.blue },
+    { label: "insertions", value: stats.swaps || "-", color: C.sorted },
+    { label: "nodes", value: state.treeData?.nodes?.length || 0, color: C.textMuted },
+  ];
+
+  const items = category === "sort" ? statsConfig : category === "path" ? pathStats : category === "graph" ? graphStats : treeStats;
 
   return (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>

@@ -5,6 +5,7 @@ import { makeGrid } from "../../utils/makeGrid";
 import { addDefaultWalls } from "../../utils/addDefaultWalls";
 import { GRID_COLS_N, GRID_ROWS_N } from "../../constants";
 import { GRAPH_PRESETS } from "../Graph/presets";
+import { TREE_PRESETS } from "../Tree/presets";
 import { Btn } from "../ui/Button";
 
 const PRESETS = {
@@ -46,7 +47,7 @@ const PRESETS = {
 export default function Controls() {
   const { state, dispatch } = useStore();
   const { run, pause, stop, stepOnce } = useVisualizer();
-  const { running, paused, speed, category } = state;
+  const { running, paused, speed, category, algoKey } = state;
 
   const applyPreset = (key) => {
     const g = PRESETS[key].build();
@@ -157,6 +158,54 @@ export default function Controls() {
               onClick={() => {
                 dispatch({ type: "SET_GRAPH_DATA", payload: p.data });
                 dispatch({ type: "RESET_GRAPH_COLORS" });
+              }}
+              disabled={running}
+              style={{
+                padding: "3px 10px",
+                fontSize: 11,
+                fontFamily: "inherit",
+                borderRadius: 4,
+                cursor: running ? "not-allowed" : "pointer",
+                border: `1px solid ${C.border}`,
+                background: "transparent",
+                color: C.textMuted,
+                opacity: running ? 0.4 : 1,
+                transition: "all .15s",
+              }}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Presets (tree — BST/AVL only) */}
+      {category === "tree" && !algoKey.startsWith("trie") && !algoKey.startsWith("seg") && !algoKey.startsWith("heap") && (
+        <div
+          style={{
+            display: "flex",
+            gap: 6,
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <span
+            style={{
+              fontSize: 10,
+              color: C.textMuted,
+              letterSpacing: ".1em",
+              textTransform: "uppercase",
+            }}
+          >
+            Presets
+          </span>
+          {Object.entries(TREE_PRESETS).map(([k, p]) => (
+            <button
+              key={k}
+              onClick={() => {
+                dispatch({ type: "SET_TREE_INPUT", payload: p.input });
+                dispatch({ type: "SET_TREE_DATA", payload: { nodes: [], edges: [] } });
+                dispatch({ type: "RESET_TREE_COLORS" });
               }}
               disabled={running}
               style={{
