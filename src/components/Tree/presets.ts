@@ -19,7 +19,7 @@ export type TreeVizData = {
 };
 
 export type TreeInput = {
-  values: number[];
+  values?: number[];
   target?: number;
   words?: string[];
   searchWord?: string;
