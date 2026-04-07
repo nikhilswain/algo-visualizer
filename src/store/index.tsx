@@ -7,6 +7,7 @@ import { addDefaultWalls } from "../utils/addDefaultWalls";
 import { makeGrid } from "../utils/makeGrid";
 import type { CellType, Grid } from "../types";
 import type { GraphData } from "../components/Graph/presets";
+import type { TreeVizData, TreeInput } from "../components/Tree/presets";
 import { GRID_COLS, GRID_ROWS } from "../constants";
 
 type Stats = {
@@ -32,7 +33,7 @@ type CellMeta = {
 };
 
 type State = {
-  category: "sort" | "path" | "graph";
+  category: "sort" | "path" | "graph" | "tree";
   algoKey: string;
   lang: "js" | "py";
   heuristic: string;
@@ -53,6 +54,11 @@ type State = {
   graphData: GraphData;
   graphNodeColors: Record<string, string>;
   graphEdgeColors: Record<string, string>;
+
+  treeInput: TreeInput;
+  treeData: TreeVizData;
+  treeNodeColors: Record<string, string>;
+  treeEdgeColors: Record<string, string>;
 
   running: boolean;
   paused: boolean;
@@ -94,7 +100,13 @@ type Action =
   | { type: "SET_GRAPH_DATA"; payload: GraphData }
   | { type: "SET_GRAPH_NODE_COLORS"; payload: Record<string, string> }
   | { type: "SET_GRAPH_EDGE_COLORS"; payload: Record<string, string> }
-  | { type: "RESET_GRAPH_COLORS" };
+  | { type: "RESET_GRAPH_COLORS" }
+  | { type: "SET_TREE_INPUT"; payload: TreeInput }
+  | { type: "SET_TREE_DATA"; payload: TreeVizData }
+  | { type: "SET_TREE_NODE_COLORS"; payload: Record<string, string> }
+  | { type: "SET_TREE_EDGE_COLORS"; payload: Record<string, string> }
+  | { type: "RESET_TREE_COLORS" }
+  | { type: "JUMP_TO_STEP"; payload: number };
 
 type CtxType = {
   state: State;
@@ -135,9 +147,14 @@ const initState: State = {
   graphNodeColors: {},
   graphEdgeColors: {},
 
+  treeInput: { values: [] },
+  treeData: { nodes: [], edges: [] },
+  treeNodeColors: {},
+  treeEdgeColors: {},
+
   running: false,
   paused: false,
-  speed: 5,
+  speed: 2,
   stats: { comps: 0, swaps: 0, passes: 0, visited: 0, frontier: 0, pathLen: 0 },
   narrator: {
     step: "ready",
@@ -212,11 +229,34 @@ function reducer(state: State, action: Action): State {
     case "SET_HEATMAP":
       return { ...state, heatmap: action.payload };
     case "PUSH_HISTORY": {
-      const newHist = [
-        ...state.history.slice(0, state.historyIdx + 1),
-        action.payload,
-      ];
+      const newHist = [...state.history, action.payload];
       return { ...state, history: newHist, historyIdx: newHist.length - 1 };
+    }
+    case "JUMP_TO_STEP": {
+      const idx = action.payload;
+      const entry = state.history[idx];
+      if (!entry) return state;
+      const s = entry.snapshot || {};
+      return {
+        ...state,
+        historyIdx: idx,
+        running: false,
+        paused: false,
+        narrator: { step: entry.type, msg: entry.msg, why: "" },
+        stats: s.stats ? { ...state.stats, ...s.stats } : state.stats,
+        activeLine: s.activeLine || state.activeLine,
+        sortArr: s.sortArr !== undefined ? s.sortArr : state.sortArr,
+        sortColors: s.sortColors !== undefined ? s.sortColors : state.sortColors,
+        sortedSet: s.sortedSet !== undefined ? new Set(s.sortedSet) : state.sortedSet,
+        gridColors: s.gridColors !== undefined ? s.gridColors : state.gridColors,
+        cellData: s.cellData !== undefined ? s.cellData : state.cellData,
+        heatmap: s.heatmap !== undefined ? s.heatmap : state.heatmap,
+        graphNodeColors: s.graphNodeColors !== undefined ? s.graphNodeColors : state.graphNodeColors,
+        graphEdgeColors: s.graphEdgeColors !== undefined ? s.graphEdgeColors : state.graphEdgeColors,
+        treeData: s.treeData !== undefined ? s.treeData : state.treeData,
+        treeNodeColors: s.treeNodeColors !== undefined ? s.treeNodeColors : state.treeNodeColors,
+        treeEdgeColors: s.treeEdgeColors !== undefined ? s.treeEdgeColors : state.treeEdgeColors,
+      };
     }
     case "SET_HIST_IDX":
       return { ...state, historyIdx: action.payload };
@@ -239,6 +279,16 @@ function reducer(state: State, action: Action): State {
       return { ...state, graphEdgeColors: action.payload };
     case "RESET_GRAPH_COLORS":
       return { ...state, graphNodeColors: {}, graphEdgeColors: {} };
+    case "SET_TREE_INPUT":
+      return { ...state, treeInput: action.payload };
+    case "SET_TREE_DATA":
+      return { ...state, treeData: action.payload };
+    case "SET_TREE_NODE_COLORS":
+      return { ...state, treeNodeColors: action.payload };
+    case "SET_TREE_EDGE_COLORS":
+      return { ...state, treeEdgeColors: action.payload };
+    case "RESET_TREE_COLORS":
+      return { ...state, treeNodeColors: {}, treeEdgeColors: {} };
     default:
       return state;
   }
